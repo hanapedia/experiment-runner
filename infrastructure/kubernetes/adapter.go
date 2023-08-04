@@ -3,7 +3,7 @@ package kubernetes
 import (
 	"github.com/hanapedia/rca-experiment-runner/pkg/application/port"
 	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
-	"github.com/hanapedia/rca-experiment-runner/util"
+	"github.com/hanapedia/rca-experiment-runner/utility"
 	"k8s.io/client-go/kubernetes"
 )
 
@@ -39,7 +39,7 @@ func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(namespace stri
 
 // CreateAndApplyJobResource converts domain job to kubernetes api job type and create Job.
 func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.Deployment) error {
-	job := ConstructJob(util.GetTimestampedName(deployment.Name), adapter.config.GetDuration())
+	job := ConstructJob(utility.GetTimestampedName(deployment.Name), adapter.config.GetDuration())
 	err := adapter.client.ApplyJobResource(job)
 	if err != nil {
 		return err

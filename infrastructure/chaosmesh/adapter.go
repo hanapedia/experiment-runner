@@ -3,7 +3,7 @@ package chaosmesh
 import (
 	"github.com/hanapedia/rca-experiment-runner/pkg/application/port"
 	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
-	"github.com/hanapedia/rca-experiment-runner/util"
+	"github.com/hanapedia/rca-experiment-runner/utility"
 	"k8s.io/client-go/dynamic"
 )
 
@@ -21,7 +21,7 @@ func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.Experim
 
 func (adapter *ChaosMeshAdapter) CreateAndApplyNetworkDelay(deployment domain.Deployment) error {
 	networkDelay := ConstructNetworkChaos(&NetworkChaosArgs{
-		Name:            util.GetTimestampedName(deployment.Name),
+		Name:            utility.GetTimestampedName(deployment.Name),
 		TargetNamespace: deployment.Namespace,
 		Selector:        map[string]string{"app": deployment.Name},
 		Duration:        adapter.config.InjectionDuration.String(),
