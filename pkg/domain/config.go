@@ -12,6 +12,9 @@ type ExperimentConfig struct {
 	// TargetNamespace is the namespace that application is running in
 	TargetNamespace string
 
+	// BatchConfigMapName is the name of config map that will be fed to the Job created
+	BatchConfigMapName string
+
 	// NormalDuration is the duration without injection
 	NormalDuration time.Duration
 

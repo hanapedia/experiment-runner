@@ -39,7 +39,13 @@ func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(namespace stri
 
 // CreateAndApplyJobResource converts domain job to kubernetes api job type and create Job.
 func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.Deployment) error {
-	job := ConstructJob(utility.GetTimestampedName(deployment.Name), adapter.config.GetDuration())
+	job := ConstructJob(JobArgs{
+		Name:            utility.GetTimestampedName(adapter.config.Name, deployment.Name),
+		TargetNamespace: adapter.config.TargetNamespace,
+		ConfigMapName:   adapter.config.BatchConfigMapName,
+		Duration:        adapter.config.GetDuration(),
+	},
+	)
 	err := adapter.client.ApplyJobResource(job)
 	if err != nil {
 		return err

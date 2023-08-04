@@ -21,7 +21,7 @@ func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.Experim
 
 func (adapter *ChaosMeshAdapter) CreateAndApplyNetworkDelay(deployment domain.Deployment) error {
 	networkDelay := ConstructNetworkChaos(&NetworkChaosArgs{
-		Name:            utility.GetTimestampedName(deployment.Name),
+		Name:            utility.GetTimestampedName(adapter.config.Name, deployment.Name),
 		TargetNamespace: deployment.Namespace,
 		Selector:        map[string]string{"app": deployment.Name},
 		Duration:        adapter.config.InjectionDuration.String(),

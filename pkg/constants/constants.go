@@ -5,7 +5,7 @@ const (
 	ImageName = "hiroki11hanada/rca-batch:latest"
 
 	// ConfigMapName defines the name of the ConfigMap used by the application.
-	ConfigMapName = "rca-batch-env"
+	DefaultConfigMapName = "rca-batch-env"
 
 	// RcaNamespace defines the name of namespace where this job and the job created will run in.
 	RcaNamespace = "rca"

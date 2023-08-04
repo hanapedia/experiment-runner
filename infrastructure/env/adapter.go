@@ -18,9 +18,19 @@ func NewExperimentConfig() (*domain.ExperimentConfig, error) {
 		log.Println("[INFO]: No .env file found. Proceeding to read environmental variables without it.")
 	}
 
+	name := os.Getenv("EXPERIMENT_NAME")
+	if name == "" {
+		return nil, errors.New("EXPERIMENT_NAME must be set")
+	}
+
 	targetNamespace := os.Getenv("TARGET_NAMESPACE")
 	if targetNamespace == "" {
 		return nil, errors.New("TARGET_NAMESPACE must be set")
+	}
+
+	configMapName := os.Getenv("BATCH_CONFIG_MAP_NAME")
+	if configMapName == "" {
+		return nil, errors.New("BATCH_CONFIG_MAP_NAME must be set")
 	}
 
 	normalDurationStr := os.Getenv("NORMAL_DURATION")
@@ -54,11 +64,13 @@ func NewExperimentConfig() (*domain.ExperimentConfig, error) {
 	}
 
 	config := &domain.ExperimentConfig{
-		TargetNamespace:   targetNamespace,
-		NormalDuration:    normalDuration,
-		InjectionDuration: injectionDuration,
-		Latency:           latencyDuration,
-		Jitter:            jitterDuration,
+		Name:               name,
+		TargetNamespace:    targetNamespace,
+		BatchConfigMapName: configMapName,
+		NormalDuration:     normalDuration,
+		InjectionDuration:  injectionDuration,
+		Latency:            latencyDuration,
+		Jitter:             jitterDuration,
 	}
 
 	return config, nil

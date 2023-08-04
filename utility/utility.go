@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-func GetTimestampedName(name string) string {
+func GetTimestampedName(experimentName, deploymentName string) string {
 	// Get the location for JST
 	loc, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
 		fmt.Printf("failed to load location. Abort using timestamp. %s", err)
-		return name
+		return fmt.Sprintf("%s-%s", experimentName, deploymentName)
 	}
 
 	// Get the current time in JST
@@ -18,5 +18,5 @@ func GetTimestampedName(name string) string {
 
 	// Format the time in the format "mm-dd-hh-mm-ss"
 	timeString := now.Format("01-02-15-04-05")
-	return fmt.Sprintf("%s-%s", name, timeString)
+	return fmt.Sprintf("%s-%s-%s", experimentName, deploymentName, timeString)
 }

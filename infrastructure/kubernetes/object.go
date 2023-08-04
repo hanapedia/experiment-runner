@@ -8,6 +8,13 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+type JobArgs struct {
+	Name string
+	TargetNamespace string
+	ConfigMapName string
+	Duration string
+}
+
 // ConstructEnvFromConfigMap creates an EnvFromSource object from a config map.
 func ConstructEnvFromConfigMap(name string) corev1.EnvFromSource {
 	return corev1.EnvFromSource{
@@ -53,20 +60,21 @@ func ConstructContainer(name, imageName string, envFrom []corev1.EnvFromSource, 
 }
 
 // ConstructJob creates a batchv1.Job object equivalent to the provided yaml manifest.
-func ConstructJob(name, duration string) *batchv1.Job {
+func ConstructJob(args JobArgs) *batchv1.Job {
 	envFrom := []corev1.EnvFromSource{
-		ConstructEnvFromConfigMap(constants.ConfigMapName),
+		ConstructEnvFromConfigMap(args.ConfigMapName),
 	}
 	env := []corev1.EnvVar{
 		ConstructEnvFromSecret("AWS_ACCESS_KEY_ID", "aws-credentials", "aws_access_key_id"),
 		ConstructEnvFromSecret("AWS_SECRET_ACCESS_KEY", "aws-credentials", "aws_secret_access_key"),
-		ConstructEnvFromString("S3_KEY", name),
-		ConstructEnvFromString("DURATION", duration),
+		ConstructEnvFromString("S3_KEY", args.Name),
+		ConstructEnvFromString("KUBE_NAMESPACE", args.TargetNamespace),
+		ConstructEnvFromString("DURATION", args.Duration),
 	}
-	container := ConstructContainer(name, constants.ImageName, envFrom, env)
+	container := ConstructContainer(args.Name, constants.ImageName, envFrom, env)
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: name,
+			Name: args.Name,
 		},
 		Spec: batchv1.JobSpec{
 			Template: corev1.PodTemplateSpec{
