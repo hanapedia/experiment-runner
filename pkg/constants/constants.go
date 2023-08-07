@@ -2,10 +2,13 @@ package constants
 
 const (
 	// ImageName defines the image used by the application.
-	ImageName = "hiroki11hanada/rca-batch:latest"
+	ImageName = "docker.io/hiroki11hanada/rca-batch:latest"
 
 	// ConfigMapName defines the name of the ConfigMap used by the application.
 	DefaultConfigMapName = "rca-batch-env"
+
+	// RcaBatchServiceAccountName defines the name of the ServiceAccount used by the application.
+	RcaBatchServiceAccountName = "rca-batch-serviceaccount"
 
 	// RcaNamespace defines the name of namespace where this job and the job created will run in.
 	RcaNamespace = "rca"

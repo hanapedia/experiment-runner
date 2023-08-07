@@ -70,6 +70,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 		ConstructEnvFromString("S3_KEY", args.Name),
 		ConstructEnvFromString("KUBE_NAMESPACE", args.TargetNamespace),
 		ConstructEnvFromString("DURATION", args.Duration),
+		ConstructEnvFromString("TZ", "Asia/Tokyo"),
 	}
 	container := ConstructContainer(args.Name, constants.ImageName, envFrom, env)
 	return &batchv1.Job{
@@ -81,6 +82,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 				Spec: corev1.PodSpec{
 					Containers:    []corev1.Container{container},
 					RestartPolicy: corev1.RestartPolicyNever,
+					ServiceAccountName: constants.RcaBatchServiceAccountName,
 				},
 			},
 		},

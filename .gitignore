@@ -1,1 +1,4 @@
 **/**.env
+
+# Secrets
+**/aws-credentials.yaml
