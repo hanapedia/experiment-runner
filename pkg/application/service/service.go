@@ -53,7 +53,9 @@ func (runner *ExperimentRunner) RunExperiment() error {
 		if err != nil {
 			return err
 		}
-		log.Printf("[INFO]:[Experiment Start]: Cycle completed for '%s'. (%v/%v Done)", deployment.Name, i+1, len(deployments))
+		log.Printf("[INFO]:[Experiment End]: Cycle completed for '%s'. (%v/%v Done)", deployment.Name, i+1, len(deployments))
+		log.Printf("[INFO]:[Draining]: Sleeping for another %s", runner.config.InjectionDuration)
+		time.Sleep(runner.config.InjectionDuration)
 	}
 	return nil
 }
