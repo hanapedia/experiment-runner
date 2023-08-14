@@ -20,3 +20,11 @@ func GetTimestampedName(experimentName, deploymentName string) string {
 	timeString := now.Format("01-02-15-04-05")
 	return fmt.Sprintf("%s-%s-%s", experimentName, deploymentName, timeString)
 }
+
+func GetS3Key(experimentName, deploymentName string) string {
+	return fmt.Sprintf("%s/%s", experimentName, deploymentName)
+}
+
+func GetImageWithTag(image, tag string) string {
+	return fmt.Sprintf("%s:%s", image, tag)
+}

@@ -2,7 +2,10 @@ package constants
 
 const (
 	// ImageName defines the image used by the application.
-	ImageName = "docker.io/hiroki11hanada/rca-batch:latest"
+	ImageName = "docker.io/hiroki11hanada/rca-batch"
+
+	// DefaultImageTag is the defaut value for image tags.
+	DefaultImageTag = "latest"
 
 	// ConfigMapName defines the name of the ConfigMap used by the application.
 	DefaultConfigMapName = "rca-batch-env"

@@ -15,6 +15,9 @@ type ExperimentConfig struct {
 	// BatchConfigMapName is the name of config map that will be fed to the Job created
 	BatchConfigMapName string
 
+	// ImageTag is the tag of the batch job container image
+	ImageTag string
+
 	// NormalDuration is the duration without injection
 	NormalDuration time.Duration
 

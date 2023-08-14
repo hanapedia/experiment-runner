@@ -2,6 +2,7 @@ package kubernetes
 
 import (
 	"github.com/hanapedia/rca-experiment-runner/pkg/application/port"
+	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
 	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
 	"github.com/hanapedia/rca-experiment-runner/utility"
 	"k8s.io/client-go/kubernetes"
@@ -41,8 +42,10 @@ func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(namespace stri
 func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.Deployment) error {
 	job := ConstructJob(JobArgs{
 		Name:            utility.GetTimestampedName(adapter.config.Name, deployment.Name),
+		S3Key:           utility.GetS3Key(adapter.config.Name, deployment.Name),
 		TargetNamespace: adapter.config.TargetNamespace,
 		ConfigMapName:   adapter.config.BatchConfigMapName,
+		JobImageName: utility.GetImageWithTag(constants.ImageName, adapter.config.ImageTag),
 		Duration:        adapter.config.GetDuration(),
 	},
 	)

@@ -33,6 +33,11 @@ func NewExperimentConfig() (*domain.ExperimentConfig, error) {
 		return nil, errors.New("BATCH_CONFIG_MAP_NAME must be set")
 	}
 
+	imageTag := os.Getenv("TAG")
+	if imageTag == "" {
+		imageTag = constants.DefaultImageTag
+	}
+
 	normalDurationStr := os.Getenv("NORMAL_DURATION")
 	normalDuration, err := time.ParseDuration(normalDurationStr)
 	if err != nil {
@@ -67,6 +72,7 @@ func NewExperimentConfig() (*domain.ExperimentConfig, error) {
 		Name:               name,
 		TargetNamespace:    targetNamespace,
 		BatchConfigMapName: configMapName,
+		ImageTag:           imageTag,
 		NormalDuration:     normalDuration,
 		InjectionDuration:  injectionDuration,
 		Latency:            latencyDuration,
