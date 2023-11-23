@@ -5,20 +5,20 @@ import (
 	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
-	"github.com/hanapedia/experiment-runner/internal/constants"
 	"github.com/hanapedia/experiment-runner/internal/domain"
+	"github.com/hanapedia/experiment-runner/internal/infrastructure/config"
 )
 
-// ExperimentRunner defines the core service logic.
-type ExperimentRunner struct {
-	config           *domain.ExperimentConfig
+// RCAExperimentRunner defines the core service logic.
+type RCAExperimentRunner struct {
+	config           *domain.RCAExperimentConfig
 	kubernetesClient port.KubernetesClientPort
 	chaosExperiment  port.ChaosExperimentsPort
 }
 
 // NewExperimentRunner creates new ExperimentRunner instance.
-func NewExperimentRunner(config *domain.ExperimentConfig, kubernetesClient port.KubernetesClientPort, chaosExperimentClient port.ChaosExperimentsPort) *ExperimentRunner {
-	return &ExperimentRunner{
+func NewExperimentRunner(config *domain.RCAExperimentConfig, kubernetesClient port.KubernetesClientPort, chaosExperimentClient port.ChaosExperimentsPort) *RCAExperimentRunner {
+	return &RCAExperimentRunner{
 		config:           config,
 		kubernetesClient: kubernetesClient,
 		chaosExperiment:  chaosExperimentClient,
@@ -26,11 +26,11 @@ func NewExperimentRunner(config *domain.ExperimentConfig, kubernetesClient port.
 }
 
 // RunExperiments runs the core service logic.
-func (runner *ExperimentRunner) RunExperiment() error {
+func (runner *RCAExperimentRunner) Run() error {
 	deployments, err := runner.kubernetesClient.GetDeploymentsWithOutAnnotation(
 		runner.config.TargetNamespace,
-		constants.DeploymentIgnoreAnnotaionKey,
-		constants.DeploymentIgnoreAnnotaionValue,
+		config.GetEnvs().RCA_INJECTION_IGNORE_KEY,
+		config.GetEnvs().RCA_INJECTION_IGNORE_VALUE,
 	)
 	if err != nil {
 		return err

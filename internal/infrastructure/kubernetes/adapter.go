@@ -2,7 +2,6 @@ package kubernetes
 
 import (
 	"github.com/hanapedia/experiment-runner/internal/application/port"
-	"github.com/hanapedia/experiment-runner/internal/constants"
 	"github.com/hanapedia/experiment-runner/internal/domain"
 	"github.com/hanapedia/experiment-runner/pkg/utility"
 	"k8s.io/client-go/kubernetes"
@@ -10,10 +9,10 @@ import (
 
 type KubernetesAdapter struct {
 	client *KubernetesClient
-	config *domain.ExperimentConfig
+	config *domain.RCAExperimentConfig
 }
 
-func NewKubernetesAdapter(clientset *kubernetes.Clientset, config *domain.ExperimentConfig) port.KubernetesClientPort {
+func NewKubernetesAdapter(clientset *kubernetes.Clientset, config *domain.RCAExperimentConfig) port.KubernetesClientPort {
 	return &KubernetesAdapter{
 		client: NewKubernetesClient(clientset),
 		config: config,
@@ -44,12 +43,12 @@ func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.De
 		Name:            utility.GetTimestampedName(adapter.config.Name, deployment.Name),
 		S3Key:           utility.GetS3Key(adapter.config.Name, deployment.Name),
 		TargetNamespace: adapter.config.TargetNamespace,
-		ConfigMapName:   adapter.config.BatchConfigMapName,
-		JobImageName: utility.GetImageWithTag(constants.ImageName, adapter.config.ImageTag),
+		ConfigMapName:   adapter.config.MetricsQueryConfigMapName,
+		JobImageName:    adapter.config.GetMetricsQueryImageName(),
 		Duration:        adapter.config.GetDuration(),
 	},
 	)
-	err := adapter.client.ApplyJobResource(job)
+	err := adapter.client.ApplyJobResource(job, adapter.config.ExperimentNamespace)
 	if err != nil {
 		return err
 	}

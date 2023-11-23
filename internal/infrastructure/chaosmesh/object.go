@@ -4,17 +4,17 @@ import (
 	"fmt"
 
 	"github.com/hanapedia/experiment-runner/internal/infrastructure/crd/chaosmesh"
-	"github.com/hanapedia/experiment-runner/internal/constants"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type NetworkChaosArgs struct {
-	Name            string
-	TargetNamespace string
-	Selector        map[string]string
-	Duration        string
-	Latency         string
-	Jitter          string
+	Name                string
+	TargetNamespace     string
+	ExperimentNamespace string
+	Selector            map[string]string
+	Duration            string
+	Latency             string
+	Jitter              string
 }
 
 // ConstructNetworkChaos create type network chaos kubernetes custom resource objects for chaos-mesh.
@@ -26,7 +26,7 @@ func ConstructNetworkChaos(args *NetworkChaosArgs) *chaosmesh.NetworkChaos {
 		},
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      args.Name,
-			Namespace: constants.ChaosExperimentNamespace,
+			Namespace: args.ExperimentNamespace,
 		},
 		Spec: ConstructNetworkChaosSpec(args),
 	}

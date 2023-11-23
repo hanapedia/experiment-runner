@@ -1,8 +1,6 @@
 package kubernetes
 
 import (
-	"github.com/hanapedia/experiment-runner/internal/constants"
-
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -74,7 +72,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 		ConstructEnvFromString("DURATION", args.Duration),
 		ConstructEnvFromString("TZ", "Asia/Tokyo"),
 	}
-	container := ConstructContainer(args.Name, constants.ImageName, envFrom, env)
+	container := ConstructContainer(args.Name, args.JobImageName, envFrom, env)
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: args.Name,
@@ -84,7 +82,6 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 				Spec: corev1.PodSpec{
 					Containers:         []corev1.Container{container},
 					RestartPolicy:      corev1.RestartPolicyNever,
-					ServiceAccountName: constants.RcaBatchServiceAccountName,
 				},
 			},
 		},

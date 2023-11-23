@@ -8,7 +8,7 @@ import (
 
 	"github.com/hanapedia/experiment-runner/internal/application/service"
 	"github.com/hanapedia/experiment-runner/internal/infrastructure/chaosmesh"
-	"github.com/hanapedia/experiment-runner/internal/infrastructure/env"
+	"github.com/hanapedia/experiment-runner/internal/infrastructure/config"
 	k8sInfra "github.com/hanapedia/experiment-runner/internal/infrastructure/kubernetes"
 )
 
@@ -18,10 +18,7 @@ var rcaCmd = &cobra.Command{
 	Short: "Run a RCA experiment.",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prepare experiment configs
-		config, err := env.NewExperimentConfig()
-		if err != nil {
-			panic(err.Error())
-		}
+		config := config.NewRCAExperimentConfig()
 
 		// Load kubeconfig from KUBECONFIG
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -50,7 +47,7 @@ var rcaCmd = &cobra.Command{
 		chaosAdapter := chaosmesh.NewChaosMeshAdapter(dynamicClient, config)
 
 		experimentRunner := service.NewExperimentRunner(config, kubernetesAdapter, chaosAdapter)
-		err = experimentRunner.RunExperiment()
+		err = experimentRunner.Run()
 		if err != nil {
 			panic(err.Error())
 		}

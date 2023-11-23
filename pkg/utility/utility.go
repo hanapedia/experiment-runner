@@ -25,6 +25,9 @@ func GetS3Key(experimentName, deploymentName string) string {
 	return fmt.Sprintf("%s/%s", experimentName, deploymentName)
 }
 
-func GetImageWithTag(image, tag string) string {
-	return fmt.Sprintf("%s:%s", image, tag)
+func ParseDurationWithDefault(durationStr string, defaultDuration time.Duration) time.Duration {
+	if duration, err := time.ParseDuration(durationStr); err == nil {
+		return duration
+	}
+	return defaultDuration
 }

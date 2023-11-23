@@ -9,10 +9,10 @@ import (
 
 type ChaosMeshAdapter struct {
 	client *ChaosMeshClient
-	config *domain.ExperimentConfig
+	config *domain.RCAExperimentConfig
 }
 
-func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.ExperimentConfig) port.ChaosExperimentsPort {
+func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.RCAExperimentConfig) port.ChaosExperimentsPort {
 	return &ChaosMeshAdapter{
 		client: NewChaosMeshClient(dynamicClient),
 		config: config,
