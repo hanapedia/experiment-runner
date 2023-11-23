@@ -1,9 +1,9 @@
 package chaosmesh
 
 import (
-	"github.com/hanapedia/rca-experiment-runner/pkg/application/port"
-	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
-	"github.com/hanapedia/rca-experiment-runner/utility"
+	"github.com/hanapedia/experiment-runner/internal/application/port"
+	"github.com/hanapedia/experiment-runner/internal/domain"
+	"github.com/hanapedia/experiment-runner/pkg/utility"
 	"k8s.io/client-go/dynamic"
 )
 

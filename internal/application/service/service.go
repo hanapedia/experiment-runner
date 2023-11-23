@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.com/hanapedia/rca-experiment-runner/pkg/application/port"
-	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
-	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
+	"github.com/hanapedia/experiment-runner/internal/application/port"
+	"github.com/hanapedia/experiment-runner/internal/constants"
+	"github.com/hanapedia/experiment-runner/internal/domain"
 )
 
 // ExperimentRunner defines the core service logic.

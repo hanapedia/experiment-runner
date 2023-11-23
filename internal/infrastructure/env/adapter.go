@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
-	"github.com/hanapedia/rca-experiment-runner/pkg/domain"
+	"github.com/hanapedia/experiment-runner/internal/constants"
+	"github.com/hanapedia/experiment-runner/internal/domain"
 
 	"github.com/joho/godotenv"
 )

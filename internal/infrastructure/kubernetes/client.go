@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
+	"github.com/hanapedia/experiment-runner/internal/constants"
 	v1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

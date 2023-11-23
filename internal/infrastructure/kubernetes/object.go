@@ -1,7 +1,7 @@
 package kubernetes
 
 import (
-	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
+	"github.com/hanapedia/experiment-runner/internal/constants"
 
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"

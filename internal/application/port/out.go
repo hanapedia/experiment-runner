@@ -1,6 +1,6 @@
 package port
 
-import "github.com/hanapedia/rca-experiment-runner/pkg/domain"
+import "github.com/hanapedia/experiment-runner/internal/domain"
 
 // KubernetesClientPort defines the interface for interactions with the Kubernetes API
 type KubernetesClientPort interface {

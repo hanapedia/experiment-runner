@@ -3,8 +3,8 @@ package chaosmesh
 import (
 	"fmt"
 
-	"github.com/hanapedia/rca-experiment-runner/infrastructure/crd/chaosmesh"
-	"github.com/hanapedia/rca-experiment-runner/pkg/constants"
+	"github.com/hanapedia/experiment-runner/internal/infrastructure/crd/chaosmesh"
+	"github.com/hanapedia/experiment-runner/internal/constants"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

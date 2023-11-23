@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/hanapedia/rca-experiment-runner/infrastructure/crd/chaosmesh"
+	"github.com/hanapedia/experiment-runner/internal/infrastructure/crd/chaosmesh"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
