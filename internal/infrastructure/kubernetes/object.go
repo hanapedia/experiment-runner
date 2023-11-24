@@ -8,9 +8,10 @@ import (
 
 type JobArgs struct {
 	Name            string
-	S3Key           string
 	TargetNamespace string
 	ConfigMapName   string
+	S3BucketDir     string
+	K6TestName      string
 	JobImageName    string
 	Duration        string
 }
@@ -67,8 +68,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 	env := []corev1.EnvVar{
 		ConstructEnvFromSecret("AWS_ACCESS_KEY_ID", "aws-credentials", "aws_access_key_id"),
 		ConstructEnvFromSecret("AWS_SECRET_ACCESS_KEY", "aws-credentials", "aws_secret_access_key"),
-		ConstructEnvFromString("S3_KEY", args.S3Key),
-		ConstructEnvFromString("KUBE_NAMESPACE", args.TargetNamespace),
+		ConstructEnvFromString("S3_KEY", args.S3BucketDir),
 		ConstructEnvFromString("DURATION", args.Duration),
 		ConstructEnvFromString("TZ", "Asia/Tokyo"),
 	}
@@ -80,8 +80,8 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 		Spec: batchv1.JobSpec{
 			Template: corev1.PodTemplateSpec{
 				Spec: corev1.PodSpec{
-					Containers:         []corev1.Container{container},
-					RestartPolicy:      corev1.RestartPolicyNever,
+					Containers:    []corev1.Container{container},
+					RestartPolicy: corev1.RestartPolicyNever,
 				},
 			},
 		},

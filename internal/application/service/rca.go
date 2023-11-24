@@ -49,7 +49,7 @@ func (runner *RCAExperimentRunner) Run() error {
 		time.Sleep(runner.config.InjectionDuration)
 
 		log.Printf("[INFO]:[Injection Period End]: Waiting for metrics export to complete")
-		err = runner.kubernetesClient.CreateAndApplyJobResource(deployment)
+		err = runner.kubernetesClient.CreateAndApplyJobResource(deployment, runner.config)
 		if err != nil {
 			return err
 		}

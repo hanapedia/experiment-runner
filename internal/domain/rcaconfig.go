@@ -16,14 +16,14 @@ type RCAExperimentConfig struct {
 	// TargetNamespace is the namespace that application is running in
 	ExperimentNamespace string
 
-	// MetricsQueryConfigMapName is the name of config map that will be fed to the Job created
-	MetricsQueryConfigMapName string
+	// MetricsProcessorConfigMapName is the name of config map that will be fed to the Job created
+	MetricsProcessorConfigMapName string
 
-	// MetricsQueryImageName is the tag of the batch job container image
-	MetricsQueryImageName string
+	// MetricsProcessorImageName is the tag of the batch job container image
+	MetricsProcessorImageName string
 
-	// MetricsQueryImageName is the tag of the batch job container image
-	MetricsQueryImageTag string
+	// MetricsProcessorImageName is the tag of the batch job container image
+	MetricsProcessorImageTag string
 
 	// NormalDuration is the duration without injection
 	NormalDuration time.Duration
@@ -50,6 +50,6 @@ func (config RCAExperimentConfig) GetDuration() string {
 	return strconv.Itoa(seconds)
 }
 
-func (config RCAExperimentConfig) GetMetricsQueryImageName() string {
-	return fmt.Sprintf("%s:%s", config.MetricsQueryImageName, config.MetricsQueryImageTag)
+func (config RCAExperimentConfig) GetMetricsProcessorImageName() string {
+	return fmt.Sprintf("%s:%s", config.MetricsProcessorImageName, config.MetricsProcessorImageTag)
 }

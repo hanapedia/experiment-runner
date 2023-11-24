@@ -7,11 +7,11 @@ import (
 
 func NewRCAExperimentConfig() *domain.RCAExperimentConfig {
 	return &domain.RCAExperimentConfig{
-		Name:                      GetEnvs().EXPERIMENT_NAME,
-		TargetNamespace:           GetEnvs().TARGET_NAMESPACE,
-		ExperimentNamespace:       GetEnvs().EXPERIMENT_NAMESPACE,
-		MetricsQueryConfigMapName: GetEnvs().METRICS_QUERY_CONFIG_MAP_NAME,
-		MetricsQueryImageName:     GetEnvs().METRICS_QUERY_IMAGE,
+		Name:                          GetEnvs().EXPERIMENT_NAME,
+		TargetNamespace:               GetEnvs().TARGET_NAMESPACE,
+		ExperimentNamespace:           GetEnvs().EXPERIMENT_NAMESPACE,
+		MetricsProcessorConfigMapName: GetEnvs().METRICS_PROCESSOR_CONFIG_MAP_NAME,
+		MetricsProcessorImageName:     GetEnvs().METRICS_PROCESSOR_IMAGE,
 		NormalDuration: utility.ParseDurationWithDefault(
 			GetEnvs().RCA_NORMAL_DURATION,
 			domain.DefaultRCAExperimentConfig.NormalDuration,
