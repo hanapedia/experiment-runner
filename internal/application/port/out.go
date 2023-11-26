@@ -10,10 +10,10 @@ type KubernetesClientPort interface {
 	CreateAndApplyJobResource(deployment domain.Deployment, config *domain.RCAExperimentConfig) error
 
 	// CreateMetricsProcessorJob creates and starts a job to process metrics
-	CreateMetricsProcessorJob(config *domain.MetricsProcessorConfig) error
+	CreateMetricsProcessorJob(config *domain.ExperimentConfig) error
 
 	// CreateLoadGeneratorDeployment creates deployment for load generator pod
-	CreateLoadGeneratorDeployment(config *domain.LoadGeneratorConfig) error
+	CreateLoadGeneratorDeployment(config *domain.ExperimentConfig) error
 }
 
 // ChaosExperimentsPort defines the interface for interactions with chaos experiment tools

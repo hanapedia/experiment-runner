@@ -14,9 +14,7 @@ var loadtestCmd = &cobra.Command{
 	Use:   "loadtest",
 	Short: "Run Loadtest and process metrics",
 	Run: func(cmd *cobra.Command, args []string) {
-		metricQueryConfig := config.NewMetricsProcessorConfig()
-		loadGeneratorConfig := config.NewLoadGeneratorConfig()
-
+		experimentConfig := config.NewExperimentConfig()
 		// Load kubeconfig from KUBECONFIG
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 		configOverrides := &clientcmd.ConfigOverrides{}
@@ -31,7 +29,7 @@ var loadtestCmd = &cobra.Command{
 
 		kubernetesAdapter := k8sInfra.NewKubernetesAdapter(kubeConfig)
 
-		runner := service.NewLoadTestRunner(kubernetesAdapter, metricQueryConfig, loadGeneratorConfig)
+		runner := service.NewLoadTestRunner(kubernetesAdapter, experimentConfig)
 		err = runner.Run()
 		if err != nil {
 			panic(err.Error())

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: test-lg
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test-lg
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: test-lg
+    spec:
+      containers:
+      - command:
+        - k6
+        - run
+        - -o
+        - experimental-prometheus-rw
+        - /scripts/script.js
+        env:
+        - name: TOTAL_ARRIVAL_RATE
+          value: "100"
+        - name: DURATION
+          value: 30m
+        - name: FRONTEND_ADDR
+          value: frontend:80
+        - name: INDEX_ROUTE
+          value: /
+        - name: TEST_NAME
+          value: test
+        - name: K6_PROMETHEUS_RW_SERVER_URL
+          value: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write
+        - name: K6_PROMETHEUS_RW_TREND_STATS
+          value: p(95),p(99),avg
+        image: grafana/k6:0.47.0
+        name: test-lg
+        resources:
+          limits:
+            cpu: 250m
+            memory: 1G
+          requests:
+            cpu: 125m
+            memory: 64Mi
+        volumeMounts:
+        - mountPath: /scripts/
+          name: config
+      volumes:
+      - configMap:
+          items:
+          - key: script.js
+            path: script.js
+          name: test-lg
+        name: config
+status: {}

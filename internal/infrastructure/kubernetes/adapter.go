@@ -63,16 +63,17 @@ func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.De
 	return nil
 }
 
-func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.MetricsProcessorConfig) error {
+func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.ExperimentConfig) error {
 	job := ConstructJob(JobArgs{
 		Name:            utility.GetTimestampedName(config.ExperimentName),
-		S3BucketDir:     config.S3BucketDir,
+		S3BucketDir:     config.MetricsProcessorConfig.S3BucketDir,
+		K6TestName:      config.K6TestName,
 		TargetNamespace: config.TargetNamespace,
-		ConfigMapName:   config.ConfigMapName,
-		JobImageName:    config.GetMetricsProcessorImageName(),
+		ConfigMapName:   config.MetricsProcessorConfig.ConfigMapName,
+		JobImageName:    config.MetricsProcessorConfig.GetImageName(),
 		Duration:        config.Duration,
-	},
-	)
+	})
+
 	err := adapter.client.ApplyJobResource(job, config.ExperimentNamespace)
 	if err != nil {
 		return err
@@ -80,10 +81,10 @@ func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.Metri
 	return nil
 }
 
-func (adapter *KubernetesAdapter) CreateLoadGeneratorDeployment(config *domain.LoadGeneratorConfig) error {
+func (adapter *KubernetesAdapter) CreateLoadGeneratorDeployment(config *domain.ExperimentConfig) error {
 	deployment := factory.NewDeployment(&factory.DeploymentArgs{
 		Name:     fmt.Sprintf("%s-lg", config.ExperimentName),
-		Image:    config.GetLoadGeneratorImageName(),
+		Image:    config.LoadGeneratorConfig.GetImageName(),
 		Replicas: LG_REPLICAS,
 		Resource: &corev1.ResourceRequirements{
 			Limits: corev1.ResourceList{
@@ -99,18 +100,26 @@ func (adapter *KubernetesAdapter) CreateLoadGeneratorDeployment(config *domain.L
 			"config": "/scripts/",
 		},
 		ConfigVolume: &factory.ConfigMapVolumeArgs{
-			Name: config.ConfigMapName,
+			Name: config.LoadGeneratorConfig.ConfigMapName,
 			Items: map[string]string{
 				"script.js": "script.js",
 			},
 		},
-		Envs: config.MapToEnv(),
+		Envs: config.GetLoadGeneratorEnv(),
 	})
+
+	deployment.Spec.Template.Spec.Containers[0].Command = []string{
+		"k6",
+		"run",
+		"-o",
+		"experimental-prometheus-rw",
+		"/scripts/script.js",
+	}
 
 	err := adapter.client.CreateDeployment(&deployment, config.TargetNamespace)
 	if err != nil {
 		return err
 	}
-	return nil
 
+	return nil
 }

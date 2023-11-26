@@ -2,6 +2,7 @@ package service
 
 import (
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
@@ -9,37 +10,44 @@ import (
 )
 
 type LoadTestRunner struct {
-	kubernetesClient         port.KubernetesClientPort
-	metricsQueryConfig       *domain.MetricsProcessorConfig
-	loadgeneratorQueryConfig *domain.LoadGeneratorConfig
+	kubernetesClient port.KubernetesClientPort
+	config           *domain.ExperimentConfig
 }
 
 var dryDuration = 1 * time.Minute
 
-func NewLoadTestRunner(kc port.KubernetesClientPort, mqc *domain.MetricsProcessorConfig, lgc *domain.LoadGeneratorConfig) *LoadTestRunner {
+func NewLoadTestRunner(kc port.KubernetesClientPort, config *domain.ExperimentConfig) *LoadTestRunner {
 	return &LoadTestRunner{
-		kubernetesClient:         kc,
-		metricsQueryConfig:       mqc,
-		loadgeneratorQueryConfig: lgc,
+		kubernetesClient: kc,
 	}
 }
 
 func (runner *LoadTestRunner) Run() error {
-	err := runner.kubernetesClient.CreateLoadGeneratorDeployment(runner.loadgeneratorQueryConfig)
-	if err != nil {
-		return err
+	rpss := strings.Split(runner.config.ArrivalRates, ",")
+
+	for _, rps := range rpss {
+		// update vars
+		runner.config.LoadGeneratorConfig.TotalArrivalRate = rps
+		runner.config.UpdateNamesWithArrivalRate()
+
+		err := runner.kubernetesClient.CreateLoadGeneratorDeployment(runner.config)
+		if err != nil {
+			return err
+		}
+		slog.Info("Started loadgenerator", "arrival-rate", runner.config.LoadGeneratorConfig.TotalArrivalRate)
+
+		slog.Info("[Experiement Started]: sleeping for dry duration", "duration", dryDuration)
+		time.Sleep(dryDuration)
+
+		slog.Info("[Experiement Started]: sleeping for load test duration", "duration", runner.config.GetDuration())
+		time.Sleep(runner.config.GetDuration())
+
+		err = runner.kubernetesClient.CreateMetricsProcessorJob(runner.config)
+		if err != nil {
+			return nil
+		}
+		slog.Info("Started metrics processor", "arrival-rate", runner.config.LoadGeneratorConfig.TotalArrivalRate)
 	}
-	slog.Info("[Experiement Started]: sleeping for dry duration", "duration", dryDuration)
-	time.Sleep(dryDuration)
-
-	slog.Info("[Experiement Started]: sleeping for load test duration", "duration", runner.metricsQueryConfig.GetDuration())
-	time.Sleep(runner.metricsQueryConfig.GetDuration())
-
-	err = runner.kubernetesClient.CreateMetricsProcessorJob(runner.metricsQueryConfig)
-	if err != nil {
-		return nil
-	}
-
 	slog.Info("[Experiement Ended]")
 
 	return nil
