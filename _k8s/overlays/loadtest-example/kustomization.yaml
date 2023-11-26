@@ -4,6 +4,8 @@ kind: Kustomization
 resources:
 - ../../base
 
+namespace: experiment
+
 configMapGenerator:
 - envs:
   - metrics-processor.env
@@ -11,6 +13,18 @@ configMapGenerator:
 - envs:
   - experiment-runner.env
   name: experiment-runner-env
+- name: lg-script
+  files:
+  - script.js
+
 
 generatorOptions:
   disableNameSuffixHash: true
+
+patches:
+- target:
+    group: batch
+    version: v1
+    kind: Job
+    name: experiment-runner
+  path: job-patch.yaml
