@@ -1,7 +1,0 @@
----
-- op: replace
-  path: /metadata/name
-  value: experiment0817
-- op: replace
-  path: /spec/template/spec/containers/0/name
-  value: experiment0817

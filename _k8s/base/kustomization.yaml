@@ -4,5 +4,4 @@ kind: Kustomization
 
 resources:
   - experiment-runner-rbac.yaml
-  - batch-rbac.yaml
   - job.yaml
