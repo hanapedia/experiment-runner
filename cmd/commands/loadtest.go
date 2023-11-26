@@ -9,12 +9,16 @@ import (
 	k8sInfra "github.com/hanapedia/experiment-runner/internal/infrastructure/kubernetes"
 )
 
+var (
+	isDryRun bool
+)
+
 // loadtestCmd represents the loadtest command
 var loadtestCmd = &cobra.Command{
 	Use:   "loadtest",
 	Short: "Run Loadtest and process metrics",
 	Run: func(cmd *cobra.Command, args []string) {
-		experimentConfig := config.NewExperimentConfig()
+		experimentConfig := config.NewExperimentConfig(isDryRun)
 		// Load kubeconfig from KUBECONFIG
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
 		configOverrides := &clientcmd.ConfigOverrides{}
@@ -48,5 +52,5 @@ func init() {
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
-	// loadtestCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	loadtestCmd.Flags().BoolVarP(&isDryRun, "dry-run", "d", false, "run command dry")
 }

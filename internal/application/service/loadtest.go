@@ -19,6 +19,7 @@ var dryDuration = 1 * time.Minute
 func NewLoadTestRunner(kc port.KubernetesClientPort, config *domain.ExperimentConfig) *LoadTestRunner {
 	return &LoadTestRunner{
 		kubernetesClient: kc,
+		config: config,
 	}
 }
 
@@ -37,10 +38,14 @@ func (runner *LoadTestRunner) Run() error {
 		slog.Info("Started loadgenerator", "arrival-rate", runner.config.LoadGeneratorConfig.TotalArrivalRate)
 
 		slog.Info("[Experiement Started]: sleeping for dry duration", "duration", dryDuration)
-		time.Sleep(dryDuration)
+		if !runner.config.DryRun {
+			time.Sleep(dryDuration)
+		}
 
 		slog.Info("[Experiement Started]: sleeping for load test duration", "duration", runner.config.GetDuration())
-		time.Sleep(runner.config.GetDuration())
+		if !runner.config.DryRun {
+			time.Sleep(runner.config.GetDuration())
+		}
 
 		err = runner.kubernetesClient.CreateMetricsProcessorJob(runner.config)
 		if err != nil {

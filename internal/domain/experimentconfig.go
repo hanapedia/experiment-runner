@@ -20,6 +20,9 @@ type ExperimentConfig struct {
 	RCAConfig              *RCAExperimentConfig
 	MetricsProcessorConfig *MetricsProcessorConfig
 	LoadGeneratorConfig    *LoadGeneratorConfig
+
+	// testing
+	DryRun bool
 }
 
 func (config ExperimentConfig) GetDuration() time.Duration {

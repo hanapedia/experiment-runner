@@ -5,6 +5,7 @@ import (
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
 	"github.com/hanapedia/experiment-runner/internal/domain"
+	"github.com/hanapedia/experiment-runner/pkg/file"
 	"github.com/hanapedia/experiment-runner/pkg/utility"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 	corev1 "k8s.io/api/core/v1"
@@ -73,6 +74,10 @@ func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.Exper
 		JobImageName:    config.MetricsProcessorConfig.GetImageName(),
 		Duration:        config.Duration,
 	})
+	if config.DryRun {
+		file.WriteKubernetesManifest(job, fmt.Sprintf("%s-job.yaml", config.K6TestName))
+		return nil
+	}
 
 	err := adapter.client.ApplyJobResource(job, config.ExperimentNamespace)
 	if err != nil {
@@ -116,10 +121,14 @@ func (adapter *KubernetesAdapter) CreateLoadGeneratorDeployment(config *domain.E
 		"/scripts/script.js",
 	}
 
-	err := adapter.client.CreateDeployment(&deployment, config.TargetNamespace)
+	if config.DryRun {
+		file.WriteKubernetesManifest(deployment, fmt.Sprintf("%s-deployment.yaml", config.K6TestName))
+		return nil
+	}
+
+	err := adapter.client.CreateDeployment(&deployment, config.ExperimentNamespace)
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

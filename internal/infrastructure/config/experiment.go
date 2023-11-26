@@ -2,7 +2,7 @@ package config
 
 import "github.com/hanapedia/experiment-runner/internal/domain"
 
-func NewExperimentConfig() *domain.ExperimentConfig {
+func NewExperimentConfig(isDryRun bool) *domain.ExperimentConfig {
 	return &domain.ExperimentConfig{
 		ExperimentName:         GetEnvs().EXPERIMENT_NAME,
 		ExperimentNamespace:    GetEnvs().EXPERIMENT_NAMESPACE,
@@ -13,5 +13,6 @@ func NewExperimentConfig() *domain.ExperimentConfig {
 		RCAConfig:              NewRCAExperimentConfig(),
 		MetricsProcessorConfig: NewMetricsProcessorConfig(),
 		LoadGeneratorConfig:    NewLoadGeneratorConfig(),
+		DryRun:                 isDryRun,
 	}
 }

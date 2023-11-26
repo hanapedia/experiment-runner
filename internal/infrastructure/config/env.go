@@ -44,7 +44,7 @@ var defaults = EnvVars{
 	TARGET_NAMESPACE:     "emulation",
 	EXPERIMENT_NAMESPACE: "experiment",
 	K6_TEST_NAME:         "test",
-	DURATION:             "30m",
+	DURATION:             "30s",
 	ARRIVAL_RATES:        "10,50,100,500,1000",
 
 	METRICS_PROCESSOR_CONFIG_MAP_NAME: "metrics-processor-env",
@@ -62,7 +62,7 @@ var defaults = EnvVars{
 	LG_CONFIG_MAP_NAME:              "lg-script",
 	LG_IMAGE:                        "grafana/k6",
 	LG_IMAGE_TAG:                    "0.47.0",
-	LG_FRONTEND_ADDR:                "frontend:80",
+	LG_FRONTEND_ADDR:                "frontend.emulation.svc.cluster.local:80",
 	LG_INDEX_ROUTE:                  "/",
 	LG_K6_PROMETHEUS_RW_SERVER_URL:  "http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/api/v1/write",
 	LG_K6_PROMETHEUS_RW_TREND_STATS: "p(95),p(99),avg",
@@ -97,11 +97,13 @@ func loadEnvVariables() *EnvVars {
 		RCA_LATENCY:            readEnv("RCA_LATENCY", defaults.RCA_LATENCY),
 		RCA_JITTER:             readEnv("RCA_JITTER", defaults.RCA_JITTER),
 
-		LG_CONFIG_MAP_NAME: readEnv("LG_CONFIG_MAP_NAME", defaults.LG_CONFIG_MAP_NAME),
-		LG_IMAGE:           readEnv("LG_IMAGE", defaults.LG_IMAGE),
-		LG_IMAGE_TAG:       readEnv("LG_IMAGE_TAG", defaults.LG_IMAGE_TAG),
-		LG_FRONTEND_ADDR:   readEnv("LG_FRONTEND_ADDR", defaults.LG_FRONTEND_ADDR),
-		LG_INDEX_ROUTE:     readEnv("LG_INDEX_ROUTE", defaults.LG_INDEX_ROUTE),
+		LG_CONFIG_MAP_NAME:              readEnv("LG_CONFIG_MAP_NAME", defaults.LG_CONFIG_MAP_NAME),
+		LG_IMAGE:                        readEnv("LG_IMAGE", defaults.LG_IMAGE),
+		LG_IMAGE_TAG:                    readEnv("LG_IMAGE_TAG", defaults.LG_IMAGE_TAG),
+		LG_FRONTEND_ADDR:                readEnv("LG_FRONTEND_ADDR", defaults.LG_FRONTEND_ADDR),
+		LG_INDEX_ROUTE:                  readEnv("LG_INDEX_ROUTE", defaults.LG_INDEX_ROUTE),
+		LG_K6_PROMETHEUS_RW_SERVER_URL:  readEnv("LG_K6_PROMETHEUS_RW_SERVER_URL", defaults.LG_K6_PROMETHEUS_RW_SERVER_URL),
+		LG_K6_PROMETHEUS_RW_TREND_STATS: readEnv("LG_K6_PROMETHEUS_RW_TREND_STATS", defaults.LG_K6_PROMETHEUS_RW_TREND_STATS),
 	}
 }
 
