@@ -14,6 +14,9 @@ type KubernetesClientPort interface {
 
 	// CreateLoadGeneratorDeployment creates deployment for load generator pod
 	CreateLoadGeneratorDeployment(config *domain.ExperimentConfig) error
+
+	// DeleteLoadGeneratorDeployment delete deployment for load generator pod
+	DeleteLoadGeneratorDeployment(config *domain.ExperimentConfig) error
 }
 
 // ChaosExperimentsPort defines the interface for interactions with chaos experiment tools

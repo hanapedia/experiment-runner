@@ -66,8 +66,8 @@ func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.De
 
 func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.ExperimentConfig) error {
 	job := ConstructJob(JobArgs{
-		Name:            utility.GetTimestampedName(config.ExperimentName),
-		S3BucketDir:     config.MetricsProcessorConfig.S3BucketDir,
+		Name:            utility.GetTimestampedName(fmt.Sprintf("%s-%s", config.ExperimentName, config.K6TestName)),
+		S3BucketDir:     fmt.Sprintf("%s/%s", config.MetricsProcessorConfig.S3BucketDir, config.K6TestName),
 		K6TestName:      config.K6TestName,
 		TargetNamespace: config.TargetNamespace,
 		ConfigMapName:   config.MetricsProcessorConfig.ConfigMapName,
@@ -130,5 +130,17 @@ func (adapter *KubernetesAdapter) CreateLoadGeneratorDeployment(config *domain.E
 	if err != nil {
 		return err
 	}
+	return nil
+}
+
+func (adapter *KubernetesAdapter) DeleteLoadGeneratorDeployment(config *domain.ExperimentConfig) error {
+	if config.DryRun {
+		return nil
+	}
+	err := adapter.client.DeleteDeployment(fmt.Sprintf("%s-lg", config.ExperimentName), config.ExperimentNamespace)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

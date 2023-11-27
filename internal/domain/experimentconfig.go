@@ -36,7 +36,6 @@ func (config ExperimentConfig) GetDuration() time.Duration {
 
 func (config *ExperimentConfig) UpdateNamesWithArrivalRate() {
 	config.K6TestName = config.GetNameWithArrivalRate()
-	config.MetricsProcessorConfig.S3BucketDir = config.GetNameWithArrivalRate()
 }
 
 func (config ExperimentConfig) GetNameWithArrivalRate() string {

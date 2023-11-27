@@ -9,7 +9,7 @@ spec:
       serviceAccountName: experiment-runner-serviceaccount
       containers:
       - name: experiment-runner
-        image: docker.io/hiroki11hanada/experiment-runner:v1.0.1
+        image: docker.io/hiroki11hanada/experiment-runner:v1.0.6
         imagePullPolicy: Always
         envFrom:
         - configMapRef:

@@ -47,9 +47,15 @@ func (runner *LoadTestRunner) Run() error {
 			time.Sleep(runner.config.GetDuration())
 		}
 
+		slog.Info("Duration complete. deleting loadgenerator deployment")
+		err = runner.kubernetesClient.DeleteLoadGeneratorDeployment(runner.config)
+		if err != nil {
+			return err
+		}
+
 		err = runner.kubernetesClient.CreateMetricsProcessorJob(runner.config)
 		if err != nil {
-			return nil
+			return err
 		}
 		slog.Info("Started metrics processor", "arrival-rate", runner.config.LoadGeneratorConfig.TotalArrivalRate)
 	}

@@ -44,11 +44,20 @@ func (client *KubernetesClient) ApplyJobResource(job *batchv1.Job, namespace str
 	return nil
 }
 
-// ApplyJobResource applies the batchv1.Job resource to the Cluster.
+// CreateDeployment creates provided deployment
 func (client *KubernetesClient) CreateDeployment(dep *appv1.Deployment, namespace string) error {
 	_, err := client.clientset.AppsV1().Deployments(namespace).Create(context.Background(), dep, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("could not create the deployment: %w", err)
+	}
+	return nil
+}
+
+// DeleteDeployment deletes specified deployment
+func (client *KubernetesClient) DeleteDeployment(name, namespace string) error {
+	err := client.clientset.AppsV1().Deployments(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
+	if err != nil {
+		return fmt.Errorf("could not delete the deployment: %w", err)
 	}
 	return nil
 }

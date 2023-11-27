@@ -68,7 +68,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 	env := []corev1.EnvVar{
 		ConstructEnvFromSecret("AWS_ACCESS_KEY_ID", "aws-credentials", "aws_access_key_id"),
 		ConstructEnvFromSecret("AWS_SECRET_ACCESS_KEY", "aws-credentials", "aws_secret_access_key"),
-		ConstructEnvFromString("S3_KEY", args.S3BucketDir),
+		ConstructEnvFromString("S3_BUCKET_DIR", args.S3BucketDir),
 		ConstructEnvFromString("K6_TEST_NAME", args.K6TestName),
 		ConstructEnvFromString("DURATION", args.Duration),
 		ConstructEnvFromString("TZ", "Asia/Tokyo"),
