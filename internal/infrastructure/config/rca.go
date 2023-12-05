@@ -23,5 +23,7 @@ func NewRCAExperimentConfig() *domain.RCAExperimentConfig {
 			GetEnvs().RCA_JITTER,
 			domain.DefaultRCAExperimentConfig.Jitter,
 		),
+		RcaInjectionIgnoreKey:   GetEnvs().RCA_INJECTION_IGNORE_KEY,
+		RcaInjectionIgnoreValue: GetEnvs().RCA_INJECTION_IGNORE_VALUE,
 	}
 }

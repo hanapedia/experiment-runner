@@ -1,9 +1,11 @@
 package kubernetes
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/hanapedia/experiment-runner/internal/domain"
+	"github.com/hanapedia/experiment-runner/pkg/utility"
 )
 
 func TestCreateMetricsProcessorJob(t *testing.T) {
@@ -38,7 +40,12 @@ func TestCreateMetricsProcessorJob(t *testing.T) {
 	// Test 1: Normal execution
 	t.Run("NormalExecution", func(t *testing.T) {
 		// Call CreateMetricsProcessorJob
-		_ = adapter.CreateMetricsProcessorJob(config)
+		_ = adapter.CreateMetricsProcessorJob(
+			config,
+			utility.GetTimestampedName(fmt.Sprintf("%s-%s", config.ExperimentName, config.K6TestName)),
+			utility.GetS3Key(config.MetricsProcessorConfig.S3BucketDir, config.K6TestName),
+			config.GetDuration(),
+		)
 	})
 
 	// Test 2: Normal execution

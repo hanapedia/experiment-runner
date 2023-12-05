@@ -38,7 +38,7 @@ var rcaCmd = &cobra.Command{
 		if err != nil {
 			panic(err.Error())
 		}
-		chaosAdapter := chaosmesh.NewChaosMeshAdapter(dynamicClient, config)
+		chaosAdapter := chaosmesh.NewChaosMeshAdapter(dynamicClient)
 
 		experimentRunner := service.NewExperimentRunner(config, kubernetesAdapter, chaosAdapter)
 		err = experimentRunner.Run()

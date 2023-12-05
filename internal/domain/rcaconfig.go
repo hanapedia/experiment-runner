@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"strconv"
 	"time"
 )
 
@@ -17,6 +16,9 @@ type RCAExperimentConfig struct {
 
 	// Jitter is the variance in the amount of network delay injected
 	Jitter time.Duration
+
+	RcaInjectionIgnoreKey   string
+	RcaInjectionIgnoreValue string
 }
 
 var DefaultRCAExperimentConfig = RCAExperimentConfig{
@@ -26,7 +28,6 @@ var DefaultRCAExperimentConfig = RCAExperimentConfig{
 	Jitter:            5 * time.Millisecond,
 }
 
-func (config RCAExperimentConfig) GetDuration() string {
-	seconds := int((config.InjectionDuration + config.NormalDuration).Seconds())
-	return strconv.Itoa(seconds)
+func (config RCAExperimentConfig) GetDuration() time.Duration {
+	return config.InjectionDuration + config.NormalDuration
 }
