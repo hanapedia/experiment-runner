@@ -9,10 +9,10 @@ import (
 
 type ChaosMeshAdapter struct {
 	client *ChaosMeshClient
-	config *domain.RCAExperimentConfig
+	config *domain.ExperimentConfig
 }
 
-func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.RCAExperimentConfig) port.ChaosExperimentsPort {
+func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.ExperimentConfig) port.ChaosExperimentsPort {
 	return &ChaosMeshAdapter{
 		client: NewChaosMeshClient(dynamicClient),
 		config: config,
@@ -21,12 +21,12 @@ func NewChaosMeshAdapter(dynamicClient dynamic.Interface, config *domain.RCAExpe
 
 func (adapter *ChaosMeshAdapter) CreateAndApplyNetworkDelay(deployment domain.Deployment) error {
 	networkDelay := ConstructNetworkChaos(&NetworkChaosArgs{
-		Name:            utility.GetTimestampedName(adapter.config.Name + "-" + deployment.Name),
+		Name:            utility.GetTimestampedName(adapter.config.ExperimentName + "-" + deployment.Name),
 		TargetNamespace: deployment.Namespace,
 		Selector:        map[string]string{"app": deployment.Name},
-		Duration:        adapter.config.InjectionDuration.String(),
-		Latency:         adapter.config.Latency.String(),
-		Jitter:          adapter.config.Jitter.String(),
+		Duration:        adapter.config.RCAConfig.InjectionDuration.String(),
+		Latency:         adapter.config.RCAConfig.Latency.String(),
+		Jitter:          adapter.config.RCAConfig.Jitter.String(),
 	})
 	err := adapter.client.ApplyNetworkDelay(networkDelay)
 	if err != nil {

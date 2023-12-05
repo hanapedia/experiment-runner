@@ -17,7 +17,7 @@ var rcaCmd = &cobra.Command{
 	Short: "Run a RCA experiment.",
 	Run: func(cmd *cobra.Command, args []string) {
 		// Prepare experiment configs
-		config := config.NewRCAExperimentConfig()
+		config := config.NewExperimentConfig(isDryRun)
 
 		// Load kubeconfig from KUBECONFIG
 		loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
@@ -60,4 +60,5 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// rcaCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rcaCmd.Flags().BoolVarP(&isDryRun, "dry-run", "d", false, "run command dry")
 }

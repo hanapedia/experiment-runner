@@ -2,6 +2,7 @@ package service
 
 import (
 	"log"
+	"log/slog"
 	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
@@ -11,13 +12,13 @@ import (
 
 // RCAExperimentRunner defines the core service logic.
 type RCAExperimentRunner struct {
-	config           *domain.RCAExperimentConfig
+	config           *domain.ExperimentConfig
 	kubernetesClient port.KubernetesClientPort
 	chaosExperiment  port.ChaosExperimentsPort
 }
 
 // NewExperimentRunner creates new ExperimentRunner instance.
-func NewExperimentRunner(config *domain.RCAExperimentConfig, kubernetesClient port.KubernetesClientPort, chaosExperimentClient port.ChaosExperimentsPort) *RCAExperimentRunner {
+func NewExperimentRunner(config *domain.ExperimentConfig, kubernetesClient port.KubernetesClientPort, chaosExperimentClient port.ChaosExperimentsPort) *RCAExperimentRunner {
 	return &RCAExperimentRunner{
 		config:           config,
 		kubernetesClient: kubernetesClient,
@@ -36,26 +37,27 @@ func (runner *RCAExperimentRunner) Run() error {
 		return err
 	}
 	for i, deployment := range deployments {
-		log.Printf("[INFO]:[Experiment Start]: Cycle started for '%s'", deployment.Name)
-		log.Printf("[INFO]:[Normal Period Start]: Sleeping for %s", runner.config.NormalDuration)
-		time.Sleep(runner.config.NormalDuration)
-		log.Printf("[INFO]:[Normal Period End]: Waiting for Injection to start")
+		slog.Info("[INFO]:[Experiment Start]: Cycle started for '%s'", deployment.Name)
+		slog.Info("[INFO]:[Normal Period Start]: Sleeping for %s", runner.config.RCAConfig.NormalDuration)
+		time.Sleep(runner.config.RCAConfig.NormalDuration)
+		slog.Info("[INFO]:[Normal Period End]: Waiting for Injection to start")
 
 		err = runner.chaosExperiment.CreateAndApplyNetworkDelay(deployment)
 		if err != nil {
 			return err
 		}
-		log.Printf("[INFO]:[Injection Period Start]: Injected to '%s' Sleeping for %s", deployment.Name, runner.config.InjectionDuration)
-		time.Sleep(runner.config.InjectionDuration)
+		slog.Info("[INFO]:[Injection Period Start]: Injected to '%s' Sleeping for %s", deployment.Name, runner.config.RCAConfig.InjectionDuration)
+		time.Sleep(runner.config.RCAConfig.InjectionDuration)
 
-		log.Printf("[INFO]:[Injection Period End]: Waiting for metrics export to complete")
+		// TODO: must replace with new metrics processor
+		slog.Info("[INFO]:[Injection Period End]: Waiting for metrics export to complete")
 		err = runner.kubernetesClient.CreateAndApplyJobResource(deployment, runner.config)
 		if err != nil {
 			return err
 		}
-		log.Printf("[INFO]:[Experiment End]: Cycle completed for '%s'. (%v/%v Done)", deployment.Name, i+1, len(deployments))
-		log.Printf("[INFO]:[Draining]: Sleeping for another %s", runner.config.InjectionDuration)
-		time.Sleep(runner.config.InjectionDuration)
+		slog.Info("[INFO]:[Experiment End]: Cycle completed for '%s'. (%v/%v Done)", deployment.Name, i+1, len(deployments))
+		slog.Info("[INFO]:[Draining]: Sleeping for another %s", runner.config.RCAConfig.InjectionDuration)
+		time.Sleep(runner.config.RCAConfig.InjectionDuration)
 	}
 	return nil
 }

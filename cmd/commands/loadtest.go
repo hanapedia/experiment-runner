@@ -9,10 +9,6 @@ import (
 	k8sInfra "github.com/hanapedia/experiment-runner/internal/infrastructure/kubernetes"
 )
 
-var (
-	isDryRun bool
-)
-
 // loadtestCmd represents the loadtest command
 var loadtestCmd = &cobra.Command{
 	Use:   "loadtest",
