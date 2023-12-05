@@ -32,6 +32,7 @@ func (runner *RCAExperimentRunner) Run() error {
 	if err != nil {
 		return err
 	}
+	slog.Info("[Deployment retrieved]: Starting Cycle.", "num-deployment", len(deployments))
 
 	for i, deployment := range deployments {
 		slog.Info("[Experiment Start]: Cycle started.", "deployment", deployment.Name)

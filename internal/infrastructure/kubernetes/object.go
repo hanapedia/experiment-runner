@@ -71,6 +71,7 @@ func ConstructJob(args JobArgs) *batchv1.Job {
 		ConstructEnvFromString("S3_BUCKET_DIR", args.S3BucketDir),
 		ConstructEnvFromString("K6_TEST_NAME", args.K6TestName),
 		ConstructEnvFromString("DURATION", args.Duration),
+		ConstructEnvFromString("NAMESPACE", args.TargetNamespace),
 		ConstructEnvFromString("TZ", "Asia/Tokyo"),
 	}
 	container := ConstructContainer(args.Name, args.JobImageName, envFrom, env)

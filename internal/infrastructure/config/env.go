@@ -56,8 +56,8 @@ var defaults = EnvVars{
 	RCA_INJECTION_DURATION:     "",
 	RCA_LATENCY:                "",
 	RCA_JITTER:                 "",
-	RCA_INJECTION_IGNORE_KEY:   "injection",
-	RCA_INJECTION_IGNORE_VALUE: "1",
+	RCA_INJECTION_IGNORE_KEY:   "rca",
+	RCA_INJECTION_IGNORE_VALUE: "ignore",
 
 	LG_CONFIG_MAP_NAME:              "lg-script",
 	LG_IMAGE:                        "grafana/k6",
@@ -92,10 +92,12 @@ func loadEnvVariables() *EnvVars {
 		METRICS_PROCESSOR_IMAGE_TAG:       readEnv("METRICS_PROCESSOR_IMAGE_TAG", defaults.METRICS_PROCESSOR_IMAGE_TAG),
 		METRICS_PROCESSOR_S3_BUCKET_DIR:   readEnv("METRICS_PROCESSOR_S3_BUCKET_DIR", defaults.METRICS_PROCESSOR_S3_BUCKET_DIR),
 
-		RCA_NORMAL_DURATION:    readEnv("RCA_NORMAL_DURATION", defaults.RCA_NORMAL_DURATION),
-		RCA_INJECTION_DURATION: readEnv("RCA_INJECTION_DURATION", defaults.RCA_INJECTION_DURATION),
-		RCA_LATENCY:            readEnv("RCA_LATENCY", defaults.RCA_LATENCY),
-		RCA_JITTER:             readEnv("RCA_JITTER", defaults.RCA_JITTER),
+		RCA_NORMAL_DURATION:        readEnv("RCA_NORMAL_DURATION", defaults.RCA_NORMAL_DURATION),
+		RCA_INJECTION_DURATION:     readEnv("RCA_INJECTION_DURATION", defaults.RCA_INJECTION_DURATION),
+		RCA_LATENCY:                readEnv("RCA_LATENCY", defaults.RCA_LATENCY),
+		RCA_JITTER:                 readEnv("RCA_JITTER", defaults.RCA_JITTER),
+		RCA_INJECTION_IGNORE_KEY:   readEnv("RCA_INJECTION_IGNORE_KEY", defaults.RCA_INJECTION_IGNORE_KEY),
+		RCA_INJECTION_IGNORE_VALUE: readEnv("RCA_INJECTION_IGNORE_VALUE", defaults.RCA_INJECTION_IGNORE_VALUE),
 
 		LG_CONFIG_MAP_NAME:              readEnv("LG_CONFIG_MAP_NAME", defaults.LG_CONFIG_MAP_NAME),
 		LG_IMAGE:                        readEnv("LG_IMAGE", defaults.LG_IMAGE),

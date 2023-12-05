@@ -9,4 +9,6 @@ const (
 
 	// ChaosMeshNetworkChaosResource is the CamelCased Resource name for NetworkChaos
 	ChaosMeshNetworkChaosResource = "NetworkChaos"
+
+	ChaosMeshNetworkChaosResourcePlural = "networkchaos"
 )
