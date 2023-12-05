@@ -2,7 +2,6 @@ package commands
 
 import (
 	"github.com/spf13/cobra"
-	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/tools/clientcmd"
 
 	"github.com/hanapedia/experiment-runner/internal/application/service"
@@ -32,13 +31,7 @@ var rcaCmd = &cobra.Command{
 		}
 
 		kubernetesAdapter := k8sInfra.NewKubernetesAdapter(kubeConfig)
-
-		// Prepare kube dynamic config for chaos mesh resource
-		dynamicClient, err := dynamic.NewForConfig(kubeConfig)
-		if err != nil {
-			panic(err.Error())
-		}
-		chaosAdapter := chaosmesh.NewChaosMeshAdapter(dynamicClient)
+		chaosAdapter := chaosmesh.NewChaosMeshAdapter(kubeConfig)
 
 		experimentRunner := service.NewExperimentRunner(config, kubernetesAdapter, chaosAdapter)
 		err = experimentRunner.Run()

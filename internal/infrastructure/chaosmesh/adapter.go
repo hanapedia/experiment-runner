@@ -2,19 +2,27 @@ package chaosmesh
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
 	"github.com/hanapedia/experiment-runner/internal/domain"
 	"github.com/hanapedia/experiment-runner/pkg/file"
 	"github.com/hanapedia/experiment-runner/pkg/utility"
 	"k8s.io/client-go/dynamic"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 type ChaosMeshAdapter struct {
 	client *ChaosMeshClient
 }
 
-func NewChaosMeshAdapter(dynamicClient dynamic.Interface) port.ChaosExperimentsPort {
+func NewChaosMeshAdapter(kubeConfig *rest.Config) port.ChaosExperimentsPort {
+	// Prepare kube dynamic config for chaos mesh resource
+	dynamicClient, err := dynamic.NewForConfig(kubeConfig)
+	if err != nil {
+		panic(err.Error())
+	}
 	return &ChaosMeshAdapter{
 		client: NewChaosMeshClient(dynamicClient),
 	}
