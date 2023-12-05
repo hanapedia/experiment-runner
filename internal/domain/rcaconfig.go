@@ -1,30 +1,10 @@
 package domain
 
 import (
-	"fmt"
-	"strconv"
 	"time"
 )
 
 type RCAExperimentConfig struct {
-	// Name is the name of the experiment
-	Name string
-
-	// TargetNamespace is the namespace that application is running in
-	TargetNamespace string
-
-	// TargetNamespace is the namespace that application is running in
-	ExperimentNamespace string
-
-	// MetricsProcessorConfigMapName is the name of config map that will be fed to the Job created
-	MetricsProcessorConfigMapName string
-
-	// MetricsProcessorImageName is the tag of the batch job container image
-	MetricsProcessorImageName string
-
-	// MetricsProcessorImageName is the tag of the batch job container image
-	MetricsProcessorImageTag string
-
 	// NormalDuration is the duration without injection
 	NormalDuration time.Duration
 
@@ -36,6 +16,9 @@ type RCAExperimentConfig struct {
 
 	// Jitter is the variance in the amount of network delay injected
 	Jitter time.Duration
+
+	RcaInjectionIgnoreKey   string
+	RcaInjectionIgnoreValue string
 }
 
 var DefaultRCAExperimentConfig = RCAExperimentConfig{
@@ -45,11 +28,6 @@ var DefaultRCAExperimentConfig = RCAExperimentConfig{
 	Jitter:            5 * time.Millisecond,
 }
 
-func (config RCAExperimentConfig) GetDuration() string {
-	seconds := int((config.InjectionDuration + config.NormalDuration).Seconds())
-	return strconv.Itoa(seconds)
-}
-
-func (config RCAExperimentConfig) GetMetricsProcessorImageName() string {
-	return fmt.Sprintf("%s:%s", config.MetricsProcessorImageName, config.MetricsProcessorImageTag)
+func (config RCAExperimentConfig) GetDuration() time.Duration {
+	return config.InjectionDuration + config.NormalDuration
 }

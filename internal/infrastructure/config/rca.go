@@ -7,11 +7,6 @@ import (
 
 func NewRCAExperimentConfig() *domain.RCAExperimentConfig {
 	return &domain.RCAExperimentConfig{
-		Name:                          GetEnvs().EXPERIMENT_NAME,
-		TargetNamespace:               GetEnvs().TARGET_NAMESPACE,
-		ExperimentNamespace:           GetEnvs().EXPERIMENT_NAMESPACE,
-		MetricsProcessorConfigMapName: GetEnvs().METRICS_PROCESSOR_CONFIG_MAP_NAME,
-		MetricsProcessorImageName:     GetEnvs().METRICS_PROCESSOR_IMAGE,
 		NormalDuration: utility.ParseDurationWithDefault(
 			GetEnvs().RCA_NORMAL_DURATION,
 			domain.DefaultRCAExperimentConfig.NormalDuration,
@@ -28,5 +23,7 @@ func NewRCAExperimentConfig() *domain.RCAExperimentConfig {
 			GetEnvs().RCA_JITTER,
 			domain.DefaultRCAExperimentConfig.Jitter,
 		),
+		RcaInjectionIgnoreKey:   GetEnvs().RCA_INJECTION_IGNORE_KEY,
+		RcaInjectionIgnoreValue: GetEnvs().RCA_INJECTION_IGNORE_VALUE,
 	}
 }

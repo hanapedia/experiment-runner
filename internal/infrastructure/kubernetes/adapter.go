@@ -2,11 +2,11 @@ package kubernetes
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
 	"github.com/hanapedia/experiment-runner/internal/domain"
 	"github.com/hanapedia/experiment-runner/pkg/file"
-	"github.com/hanapedia/experiment-runner/pkg/utility"
 	"github.com/hanapedia/hexagon/pkg/operator/object/factory"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
@@ -29,8 +29,17 @@ func NewKubernetesAdapter(kubeConfig *rest.Config) port.KubernetesClientPort {
 }
 
 // GetDeploymentsWithOutAnnotation converts retrieved kubernetes api deployments to domain deployments.
-func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(namespace string, annotationKey string, annotationValue string) ([]domain.Deployment, error) {
-	deployments, err := adapter.client.GetDeploymentsWithOutAnnotation(namespace, annotationKey, annotationValue)
+func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(config *domain.ExperimentConfig) ([]domain.Deployment, error) {
+	if config.DryRun {
+		return []domain.Deployment{
+			{Name: "test", Namespace: "test"},
+		}, nil
+	}
+	deployments, err := adapter.client.GetDeploymentsWithOutAnnotation(
+		config.TargetNamespace,
+		config.RCAConfig.RcaInjectionIgnoreKey,
+		config.RCAConfig.RcaInjectionIgnoreValue,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -46,33 +55,15 @@ func (adapter *KubernetesAdapter) GetDeploymentsWithOutAnnotation(namespace stri
 	return domainDeployments, nil
 }
 
-// CreateAndApplyJobResource converts domain job to kubernetes api job type and create Job.
-func (adapter *KubernetesAdapter) CreateAndApplyJobResource(deployment domain.Deployment, config *domain.RCAExperimentConfig) error {
+func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.ExperimentConfig, name, bucketDir string, duration time.Duration) error {
 	job := ConstructJob(JobArgs{
-		Name:            utility.GetTimestampedName(config.Name + "-" + deployment.Name),
-		S3BucketDir:     utility.GetS3Key(config.Name, deployment.Name),
-		TargetNamespace: config.TargetNamespace,
-		ConfigMapName:   config.MetricsProcessorConfigMapName,
-		JobImageName:    config.GetMetricsProcessorImageName(),
-		Duration:        config.GetDuration(),
-	},
-	)
-	err := adapter.client.ApplyJobResource(job, config.ExperimentNamespace)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (adapter *KubernetesAdapter) CreateMetricsProcessorJob(config *domain.ExperimentConfig) error {
-	job := ConstructJob(JobArgs{
-		Name:            utility.GetTimestampedName(fmt.Sprintf("%s-%s", config.ExperimentName, config.K6TestName)),
-		S3BucketDir:     fmt.Sprintf("%s/%s", config.MetricsProcessorConfig.S3BucketDir, config.K6TestName),
+		Name:            name,
+		S3BucketDir:     bucketDir,
 		K6TestName:      config.K6TestName,
 		TargetNamespace: config.TargetNamespace,
 		ConfigMapName:   config.MetricsProcessorConfig.ConfigMapName,
 		JobImageName:    config.MetricsProcessorConfig.GetImageName(),
-		Duration:        config.Duration,
+		Duration:        duration.String(),
 	})
 	if config.DryRun {
 		file.WriteKubernetesManifest(job, fmt.Sprintf("%s-job.yaml", config.K6TestName))

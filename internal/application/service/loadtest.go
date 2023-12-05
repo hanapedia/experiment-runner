@@ -1,12 +1,14 @@
 package service
 
 import (
+	"fmt"
 	"log/slog"
 	"strings"
 	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
 	"github.com/hanapedia/experiment-runner/internal/domain"
+	"github.com/hanapedia/experiment-runner/pkg/utility"
 )
 
 type LoadTestRunner struct {
@@ -19,7 +21,7 @@ var dryDuration = 1 * time.Minute
 func NewLoadTestRunner(kc port.KubernetesClientPort, config *domain.ExperimentConfig) *LoadTestRunner {
 	return &LoadTestRunner{
 		kubernetesClient: kc,
-		config: config,
+		config:           config,
 	}
 }
 
@@ -53,7 +55,12 @@ func (runner *LoadTestRunner) Run() error {
 			return err
 		}
 
-		err = runner.kubernetesClient.CreateMetricsProcessorJob(runner.config)
+		err = runner.kubernetesClient.CreateMetricsProcessorJob(
+			runner.config,
+			utility.GetTimestampedName(fmt.Sprintf("%s-%s", runner.config.ExperimentName, runner.config.K6TestName)),
+			utility.GetS3Key(runner.config.MetricsProcessorConfig.S3BucketDir, runner.config.K6TestName),
+			runner.config.GetDuration(),
+		)
 		if err != nil {
 			return err
 		}

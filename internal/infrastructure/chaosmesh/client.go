@@ -3,7 +3,6 @@ package chaosmesh
 import (
 	"context"
 	"fmt"
-	"strings"
 
 	"github.com/hanapedia/experiment-runner/internal/infrastructure/crd/chaosmesh"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,7 +26,7 @@ func (client *ChaosMeshClient) ApplyNetworkDelay(networkDelay *chaosmesh.Network
 	chaosMeshGVR := schema.GroupVersionResource{
 		Group:    ChaosMeshGroup,
 		Version:  ChaosMeshVersion,
-		Resource: strings.ToLower(ChaosMeshNetworkChaosResource),
+		Resource: ChaosMeshNetworkChaosResourcePlural,
 	}
 
 	unstructuredNetworkDelay, err := runtime.DefaultUnstructuredConverter.ToUnstructured(networkDelay)
@@ -40,7 +39,7 @@ func (client *ChaosMeshClient) ApplyNetworkDelay(networkDelay *chaosmesh.Network
 	}
 
 	// creates the network delay chaos experiment
-	_, err = client.dynamicClient.Resource(chaosMeshGVR).Namespace(networkDelay.Namespace).Create(context.TODO(), unstructuredObj, metav1.CreateOptions{})
+	_, err = client.dynamicClient.Resource(chaosMeshGVR).Namespace(networkDelay.Namespace).Create(context.Background(), unstructuredObj, metav1.CreateOptions{})
 	if err != nil {
 		return fmt.Errorf("could not apply the network delay chaos experiment: %w", err)
 	}
