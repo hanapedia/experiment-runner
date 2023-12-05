@@ -12,6 +12,7 @@ PUSH_COMMAND=docker push $(IMAGE_NAME)
 .PHONY: dev prod push format
 dev:
 	$(BUILD_COMMAND_ARM64)
+	$(PUSH_COMMAND)
 
 prod:
 	$(BUILD_COMMAND)

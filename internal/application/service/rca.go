@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"log/slog"
 	"time"
 
@@ -60,8 +61,8 @@ func (runner *RCAExperimentRunner) Run() error {
 		if err != nil {
 			return err
 		}
-		slog.Info("[Experiment End]: Cycle completed for '%s'. (%v/%v Done)", deployment.Name, i+1, len(deployments))
-		slog.Info("[Draining]: Sleeping for another %s", runner.config.RCAConfig.InjectionDuration)
+		slog.Info(fmt.Sprintf("[Experiment End]: Cycle completed. (%v/%v Done)", i+1, len(deployments)), "deployment", deployment.Name)
+		slog.Info("[Draining]: Sleeping for another cool time.", "duration", runner.config.RCAConfig.InjectionDuration)
 		if !runner.config.DryRun {
 			time.Sleep(runner.config.RCAConfig.InjectionDuration)
 		}
