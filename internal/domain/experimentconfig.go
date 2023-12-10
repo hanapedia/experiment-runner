@@ -46,6 +46,7 @@ func (config ExperimentConfig) GetLoadGeneratorEnv() []corev1.EnvVar {
 	return []corev1.EnvVar{
 		{Name: "TEST_NAME", Value: config.K6TestName},
 		{Name: "TOTAL_ARRIVAL_RATE", Value: config.LoadGeneratorConfig.TotalArrivalRate},
+		{Name: "DURATION", Value: config.Duration},
 		{Name: "FRONTEND_ADDR", Value: config.LoadGeneratorConfig.FrontendAddr},
 		{Name: "INDEX_ROUTE", Value: config.LoadGeneratorConfig.IndexRoute},
 		{Name: "K6_PROMETHEUS_RW_SERVER_URL", Value: config.LoadGeneratorConfig.K6PromWriteUrl},

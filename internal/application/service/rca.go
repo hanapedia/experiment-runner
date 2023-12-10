@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/hanapedia/experiment-runner/internal/application/port"
@@ -28,6 +29,21 @@ func NewExperimentRunner(config *domain.ExperimentConfig, kubernetesClient port.
 
 // RunExperiments runs the core service logic.
 func (runner *RCAExperimentRunner) Run() error {
+	// Start LoadGenerator
+	// set vars
+	runner.config.LoadGeneratorConfig.TotalArrivalRate = strings.Split(runner.config.ArrivalRates, ",")[0]
+	runner.config.Duration = (runner.config.RCAConfig.GetDuration() * 2).String()
+	runner.config.UpdateNamesWithArrivalRate()
+	err := runner.kubernetesClient.CreateLoadGeneratorDeployment(runner.config)
+	if err != nil {
+		return err
+	}
+	slog.Info("Started loadgenerator. waiting 1 minute for start up.", "arrival-rate", runner.config.LoadGeneratorConfig.TotalArrivalRate)
+	if !runner.config.DryRun {
+		time.Sleep(time.Minute)
+	}
+
+	// retrieve deployments
 	deployments, err := runner.kubernetesClient.GetDeploymentsWithOutAnnotation(runner.config)
 	if err != nil {
 		return err
@@ -68,5 +84,12 @@ func (runner *RCAExperimentRunner) Run() error {
 			time.Sleep(runner.config.RCAConfig.InjectionDuration)
 		}
 	}
+
+	slog.Info("Duration complete. deleting loadgenerator deployment")
+	err = runner.kubernetesClient.DeleteLoadGeneratorDeployment(runner.config)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
