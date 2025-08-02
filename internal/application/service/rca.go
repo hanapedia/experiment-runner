@@ -30,7 +30,6 @@ func NewExperimentRunner(config *domain.ExperimentConfig, kubernetesClient port.
 // RunExperiments runs the core service logic.
 func (runner *RCAExperimentRunner) Run() error {
 	// Start LoadGenerator
-	// set vars
 	runner.config.LoadGeneratorConfig.TotalArrivalRate = strings.Split(runner.config.ArrivalRates, ",")[0]
 	runner.config.Duration = (runner.config.RCAConfig.GetDuration() * 2).String()
 	runner.config.UpdateNamesWithArrivalRate()
@@ -43,6 +42,24 @@ func (runner *RCAExperimentRunner) Run() error {
 		time.Sleep(time.Minute)
 	}
 
+	// run for normal period
+	slog.Info("[Normal Period Start]: Sleeping.", "duration", runner.config.RCAConfig.NormalDuration)
+	if !runner.config.DryRun {
+		time.Sleep(runner.config.RCAConfig.NormalDuration)
+	}
+
+	// query metrics for normal period
+	err = runner.kubernetesClient.CreateMetricsProcessorJob(
+		runner.config,
+		utility.GetTimestampedName(runner.config.ExperimentName+"-normal"),
+		utility.GetS3Key(runner.config.MetricsProcessorConfig.S3BucketDir, "normal"),
+		runner.config.RCAConfig.NormalDuration,
+	)
+	if err != nil {
+		return err
+	}
+	slog.Info("[Normal Period End]: Waiting for Injection to start")
+
 	// retrieve deployments
 	deployments, err := runner.kubernetesClient.GetDeploymentsWithOutAnnotation(runner.config)
 	if err != nil {
@@ -52,11 +69,10 @@ func (runner *RCAExperimentRunner) Run() error {
 
 	for i, deployment := range deployments {
 		slog.Info("[Experiment Start]: Cycle started.", "deployment", deployment.Name)
-		slog.Info("[Normal Period Start]: Sleeping.", "duration", runner.config.RCAConfig.NormalDuration)
+		slog.Info("[Before Injection]: Sleeping.", "duration", runner.config.RCAConfig.InjectionDuration)
 		if !runner.config.DryRun {
-			time.Sleep(runner.config.RCAConfig.NormalDuration)
+			time.Sleep(runner.config.RCAConfig.InjectionDuration)
 		}
-		slog.Info("[Normal Period End]: Waiting for Injection to start")
 
 		err = runner.chaosExperiment.CreateAndApplyNetworkDelay(deployment, runner.config)
 		if err != nil {
@@ -68,20 +84,23 @@ func (runner *RCAExperimentRunner) Run() error {
 		}
 
 		// TODO: must replace with new metrics processor
-		slog.Info("[Injection Period End]: Waiting for metrics export to complete")
+		slog.Info("[Injection Period End]: Waiting for metrics export to complete",
+			"duration",
+			runner.config.RCAConfig.InjectionDuration+runner.config.RCAConfig.InjectionDuration/2,
+		)
 		err = runner.kubernetesClient.CreateMetricsProcessorJob(
 			runner.config,
 			utility.GetTimestampedName(runner.config.ExperimentName+"-"+deployment.Name),
 			utility.GetS3Key(runner.config.MetricsProcessorConfig.S3BucketDir, deployment.Name),
-			runner.config.RCAConfig.GetDuration(),
+			runner.config.RCAConfig.InjectionDuration+runner.config.RCAConfig.InjectionDuration/2,
 		)
 		if err != nil {
 			return err
 		}
 		slog.Info(fmt.Sprintf("[Experiment End]: Cycle completed. (%v/%v Done)", i+1, len(deployments)), "deployment", deployment.Name)
-		slog.Info("[Draining]: Sleeping for another cool time.", "duration", runner.config.RCAConfig.InjectionDuration)
+		slog.Info("[Draining]: Sleeping for 1 minute.")
 		if !runner.config.DryRun {
-			time.Sleep(runner.config.RCAConfig.InjectionDuration)
+			time.Sleep(time.Minute)
 		}
 	}
 
